@@ -1,3 +1,7 @@
+run:
+	gcc *.c -Wall -Wextra -Ofast -lm
+	./a.out
+
 fast:
 	gcc *.c -Wall -Wextra -Ofast -lm
 
