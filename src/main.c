@@ -20,7 +20,7 @@ int main() {
 
 	char nome[30];
 
-	Imagem *in, *out, *buffer;
+	Imagem *in, *out, *buffer, *hsl;
 
 	//Laço para todas as imagens.
 	for(int cont = 0; cont < 9; cont += 1) {
@@ -29,39 +29,38 @@ int main() {
 		//Inicializa imagens auxiliares.
 		out 	= criaImagem(in->largura, in->altura, in->n_canais);
 		buffer 	= criaImagem(in->largura, in->altura, in->n_canais);
+		hsl 	= criaImagem(in->largura, in->altura, in->n_canais);
 		
+		RGBParaHSL(in, buffer);
+		ajustaHSL(buffer, hsl, 0, 0, 0);
+
 		//Percorre cada pixel da imagem.
 		for(int y = 0; y < in->altura; y += 1) {
 			for(int x = 0; x < in->largura; x += 1) {
-				/* printf("Pixel %d\n", x * y);					
-				printf("R: %.2f", in->dados[0][y][x]);
-				printf("G: %.2f", in->dados[1][y][x]);
-				printf("B: %.2f\n", in->dados[2][y][x]); */
-
-				/* if(in->dados[0][y][x] < 0.3f
-					&& in->dados[1][y][x] > 0.4f
-					&& in->dados[2][y][x] < 0.3f) {
-						out->dados[0][y][x] = 0.0f;
-						out->dados[1][y][x] = 0.0f;
-						out->dados[2][y][x] = 0.0f;
+				if(cont == 1 || cont == 3){
+					if(hsl->dados[0][y][x] > 100 && hsl->dados[0][y][x] < 130) {
+						out->dados[0][y][x] = 0.5f;
+						out->dados[1][y][x] = 0.5f;
+						out->dados[2][y][x] = 0.5f;
+					}
+					else {
+						out->dados[0][y][x] = in->dados[0][y][x];
+						out->dados[1][y][x] = in->dados[1][y][x];
+						out->dados[2][y][x] = in->dados[2][y][x];
+					}
 				}
-				else {
-					out->dados[0][y][x] = in->dados[0][y][x];
-					out->dados[1][y][x] = in->dados[1][y][x];
-					out->dados[2][y][x] = in->dados[2][y][x];
-				} */
-
-				if(in->dados[0][y][x] + in->dados[2][y][x] < in->dados[1][y][x]) {
-					out->dados[0][y][x] = 0.0f;
-					out->dados[1][y][x] = 0.0f;
-					out->dados[2][y][x] = 0.0f;
+				else{
+					if(hsl->dados[0][y][x] > 95 && hsl->dados[0][y][x] < 138) {
+						out->dados[0][y][x] = 0.5f;
+						out->dados[1][y][x] = 0.5f;
+						out->dados[2][y][x] = 0.5f;
+					}
+					else {
+						out->dados[0][y][x] = in->dados[0][y][x];
+						out->dados[1][y][x] = in->dados[1][y][x];
+						out->dados[2][y][x] = in->dados[2][y][x];
+					}
 				}
-				else {
-					out->dados[0][y][x] = in->dados[0][y][x];
-					out->dados[1][y][x] = in->dados[1][y][x];
-					out->dados[2][y][x] = in->dados[2][y][x];
-				}
-				
 			}
 		}
 		sprintf(nome, "../resultados/teste%d.bmp", cont);
@@ -71,6 +70,7 @@ int main() {
 	destroiImagem(in);
 	destroiImagem(out);
 	destroiImagem(buffer);
+	destroiImagem(hsl);
 
 	return 0;
 }
