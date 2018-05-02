@@ -35,10 +35,18 @@ int main() {
 		ajustaHSL(buffer, hsl, 0, 0, 0);
 
 		//Percorre cada pixel da imagem.
-		for(int y = 0; y < in->altura; y += 1) {
-			for(int x = 0; x < in->largura; x += 1) {
+		for(int y = 1; y < in->altura-1; y += 1) {
+			for(int x = 1; x < in->largura-1; x += 1) {
 				if(cont == 1 || cont == 3){
-					if(hsl->dados[0][y][x] > 100 && hsl->dados[0][y][x] < 130) {
+					if(hsl->dados[0][y][x] > 100 && hsl->dados[0][y][x] < 130 && (
+							(hsl->dados[0][y-1][x] > 100 && hsl->dados[0][y-1][x] < 130) ||
+							(hsl->dados[0][y+1][x] > 100 && hsl->dados[0][y+1][x] < 130) ||
+							(hsl->dados[0][y+1][x-1] > 100 && hsl->dados[0][y+1][x-1] < 130) ||
+							(hsl->dados[0][y+1][x+1] > 100 && hsl->dados[0][y+1][x+1] < 130) ||
+							(hsl->dados[0][y-1][x-1] > 100 && hsl->dados[0][y-1][x-1] < 130) ||
+							(hsl->dados[0][y-1][x+1] > 100 && hsl->dados[0][y-1][x+1] < 130) ||
+							(hsl->dados[0][y][x-1] > 100 && hsl->dados[0][y][x-1] < 130) ||
+							(hsl->dados[0][y][x+1] > 100 && hsl->dados[0][y][x+1] < 130))) {
 						out->dados[0][y][x] = 0.5f;
 						out->dados[1][y][x] = 0.5f;
 						out->dados[2][y][x] = 0.5f;
@@ -50,7 +58,15 @@ int main() {
 					}
 				}
 				else{
-					if(hsl->dados[0][y][x] > 95 && hsl->dados[0][y][x] < 138) {
+					if(hsl->dados[0][y][x] > 95 && hsl->dados[0][y][x] < 138 && (
+							(hsl->dados[0][y-1][x] > 95 && hsl->dados[0][y-1][x] < 138) ||
+							(hsl->dados[0][y+1][x] > 95 && hsl->dados[0][y+1][x] < 138) ||
+							(hsl->dados[0][y+1][x-1] > 95 && hsl->dados[0][y+1][x-1] < 138) ||
+							(hsl->dados[0][y+1][x+1] > 95 && hsl->dados[0][y+1][x+1] < 138) ||
+							(hsl->dados[0][y-1][x-1] > 95 && hsl->dados[0][y-1][x-1] < 138) ||
+							(hsl->dados[0][y-1][x+1] > 95 && hsl->dados[0][y-1][x+1] < 138) ||
+							(hsl->dados[0][y][x-1] > 95 && hsl->dados[0][y][x-1] < 138) ||
+							(hsl->dados[0][y][x+1] > 95 && hsl->dados[0][y][x+1] < 138))) {
 						out->dados[0][y][x] = 0.5f;
 						out->dados[1][y][x] = 0.5f;
 						out->dados[2][y][x] = 0.5f;
