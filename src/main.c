@@ -115,32 +115,25 @@ void atribuiFundo(Imagem *in, Imagem *buffer, Imagem *fundoAmpliado, Imagem *out
 }
 
 void binarizaVerde(Imagem *in, Imagem *bin){
-	for(int y = 1; y < in->altura - 1; y += 1) {
-		for(int x = 1; x < in->largura - 1; x += 1) {
-
-			for(int j = y - 1; j <= y + 1; j += 1) {
-				for(int i = x - 1; i <= x + 1; i += 1) {
-
-					if(!((in->dados[0][j][i] > 65 && in->dados[0][j][i] < 145) &&
-						(in->dados[1][j][i] > 0.25f) &&
-						(in->dados[2][j][i] > 0.15f && in->dados[2][j][i] < 0.715f))) {
-						bin->dados[0][j][i] = 0.0f;
-						bin->dados[1][j][i] = 0.0f;
-						bin->dados[2][j][i] = 0.0f;
-					}
-					else {
-						bin->dados[0][j][i] = 1.0f;
-						bin->dados[1][j][i] = 1.0f;
-						bin->dados[2][j][i] = 1.0f;
-					}
-				}		
+	for(int y = 0; y < in->altura; y += 1) {
+		for(int x = 0; x < in->largura; x += 1) {
+			if(!((in->dados[0][y][x] > 65 && in->dados[0][y][x] < 145) &&
+				(in->dados[1][y][x] > 0.25f) &&
+				(in->dados[2][y][x] > 0.15f && in->dados[2][y][x] < 0.715f))) {
+				bin->dados[0][y][x] = 0.0f;
+				bin->dados[1][y][x] = 0.0f;
+				bin->dados[2][y][x] = 0.0f;
+			}
+			else {
+				bin->dados[0][y][x] = 1.0f;
+				bin->dados[1][y][x] = 1.0f;
+				bin->dados[2][y][x] = 1.0f;
 			}
 		}
-	}
+	}	
 }
 
 void atribuiFundoBin(Imagem *bin, Imagem *buffer, Imagem *fundoAmpliado){
-
 	for(int y = 0; y < bin->altura; y += 1) {
 		for(int x = 0; x < bin->largura; x += 1) {
 			if(bin->dados[0][y][x] == 1.0f && bin->dados[1][y][x] == 1.0f &&
