@@ -59,6 +59,7 @@ int main() {
 	destroiImagem(out);
 	destroiImagem(buffer);
 	destroiImagem(bin);
+	destroiImagem(fundoAmpliado);
 
 	return 0;
 }
