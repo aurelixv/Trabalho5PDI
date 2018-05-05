@@ -4,6 +4,7 @@
 
 void binarizaVerde(Imagem *in, Imagem *bin);
 void atribuiFundo(Imagem *in, Imagem *buffer, Imagem *fundoAmpliado, Imagem *out);
+void atribuiFundoBin(Imagem *bin, Imagem *buffer, Imagem *fundoAmpliado);
 
 int main() {
 	//Todas as imagens que serão utilizadas.
@@ -21,7 +22,7 @@ int main() {
 
 	char nome[30];
 
-	Imagem *in, *out, *buffer, *fundoAmpliado, *bin, *temp;
+	Imagem *in, *out, *buffer, *fundoAmpliado, *bin;
 	Imagem *fundo = abreImagem("fundo.bmp", 3);
 
 	//Laço para todas as imagens.
@@ -32,7 +33,6 @@ int main() {
 		out 	= criaImagem(in->largura, in->altura, in->n_canais);
 		buffer 	= criaImagem(in->largura, in->altura, in->n_canais);
 		bin 	= criaImagem(in->largura, in->altura, in->n_canais);
-		temp 	= criaImagem(in->largura, in->altura, in->n_canais);
 		fundoAmpliado = criaImagem(in->largura, in->altura, in->n_canais);
 		copiaConteudo(in, buffer);
 		
@@ -43,38 +43,22 @@ int main() {
 
 		binarizaVerde(in, bin);
 
-		for(int y = 0; y < in->altura; y += 1) {
-			for(int x = 0; x < in->largura; x += 1) {
-				if(bin->dados[0][y][x] == 1.0f && bin->dados[1][y][x] == 1.0f &&
-						bin->dados[2][y][x] == 1.0f) {
-					bin->dados[0][y][x] = fundoAmpliado->dados[0][y][x];
-					bin->dados[1][y][x] = fundoAmpliado->dados[1][y][x];
-					bin->dados[2][y][x] = fundoAmpliado->dados[2][y][x];
-				}
-				else {							
-					bin->dados[0][y][x] = buffer->dados[0][y][x];
-					bin->dados[1][y][x] = buffer->dados[1][y][x];
-					bin->dados[2][y][x] = buffer->dados[2][y][x];
-				}				
-			}
-		}
+		atribuiFundoBin(bin, buffer, fundoAmpliado);
 		
-		/*sprintf(nome, "../resultados/bin%d.bmp", cont);
-		salvaImagem(bin, nome);*/
+		sprintf(nome, "../resultados/binTeste%d.bmp", cont);
+		salvaImagem(bin, nome);
 
 		//Percorre cada pixel da imagem.
 		atribuiFundo(in, buffer, fundoAmpliado, out);
 
 		sprintf(nome, "../resultados/teste%d.bmp", cont);
 		salvaImagem(out, nome);
-
 	}
 
 	destroiImagem(in);
 	destroiImagem(out);
 	destroiImagem(buffer);
 	destroiImagem(bin);
-	destroiImagem(temp);
 
 	return 0;
 }
@@ -151,4 +135,23 @@ void binarizaVerde(Imagem *in, Imagem *bin){
 			}
 		}
 	}
+}
+
+void atribuiFundoBin(Imagem *bin, Imagem *buffer, Imagem *fundoAmpliado){
+
+	for(int y = 0; y < bin->altura; y += 1) {
+		for(int x = 0; x < bin->largura; x += 1) {
+			if(bin->dados[0][y][x] == 1.0f && bin->dados[1][y][x] == 1.0f &&
+					bin->dados[2][y][x] == 1.0f) {
+				bin->dados[0][y][x] = fundoAmpliado->dados[0][y][x];
+				bin->dados[1][y][x] = fundoAmpliado->dados[1][y][x];
+				bin->dados[2][y][x] = fundoAmpliado->dados[2][y][x];
+			}
+			else {							
+				bin->dados[0][y][x] = buffer->dados[0][y][x];
+				bin->dados[1][y][x] = buffer->dados[1][y][x];
+				bin->dados[2][y][x] = buffer->dados[2][y][x];
+			}				
+		}
+	}		
 }
