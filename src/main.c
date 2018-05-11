@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include "pdi.h"
 
-void binarizaVerde(Imagem *in, Imagem *bin);
+void verdeParaCinza(Imagem *in, Imagem *cinza);
 void atribuiFundo(Imagem *in, Imagem *buffer, Imagem *fundoAmpliado, Imagem *out);
-void atribuiFundoBin(Imagem *bin, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida);
+void atribuiFundoCinza(Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida);
 
 int main() {
 	//Todas as imagens que serão utilizadas.
@@ -23,7 +23,7 @@ int main() {
 	char nome[30];
 
 	Imagem *in, *out, *buffer, *fundoAmpliado;
-	Imagem *bin, *saida ,*temp;
+	Imagem *cinza, *saida ,*temp;
 	Imagem *fundo = abreImagem("fundo.bmp", 3);
 
 	//Laço para todas as imagens.
@@ -33,32 +33,24 @@ int main() {
 		//Inicializa imagens auxiliares.
 		out 	= criaImagem(in->largura, in->altura, in->n_canais);
 		buffer 	= criaImagem(in->largura, in->altura, in->n_canais);
-		bin 	= criaImagem(in->largura, in->altura, 1);
+		cinza 	= criaImagem(in->largura, in->altura, 1);
 		temp 	= criaImagem(in->largura, in->altura, 1);
 		fundoAmpliado = criaImagem(in->largura, in->altura, in->n_canais);
 		saida 	= criaImagem(in->largura, in->altura, in->n_canais);
-		
+				
 		copiaConteudo(in, buffer);
 		RGBParaHSL(in, in);
 
 		redimensionaNN(fundo, fundoAmpliado);
 
-		binarizaVerde(in, bin);
+		verdeParaCinza(in, cinza);
 
-		if(cont == 8){ //Manipula a imagem binarizada da ultima imagem
-			copiaConteudo(bin, temp);
-			abertura(temp, criaKernelCircular(27), criaCoordenada(13,13), bin, NULL);
-			copiaConteudo(bin, temp);
-			fechamento(temp, criaKernelCircular(27), criaCoordenada(13,13), bin, NULL);
-			copiaConteudo(bin, temp);
-			dilata(temp, criaKernelCircular(15), criaCoordenada(7,0), bin);
-			copiaConteudo(bin, temp);
-			abertura(temp, criaKernelCircular(27), criaCoordenada(13,13), bin, NULL);
-		}
+		sprintf(nome, "../resultados/cinza%d.bmp", cont);
+		salvaImagem(cinza, nome);
 
-		atribuiFundoBin(bin, buffer, fundoAmpliado, saida);
+		atribuiFundoCinza(cinza, buffer, fundoAmpliado, saida);
 		
-		sprintf(nome, "../resultados/binTeste%d.bmp", cont);
+		sprintf(nome, "../resultados/cinzaTeste%d.bmp", cont);
 		salvaImagem(saida, nome);
 
 		//Percorre cada pixel da imagem.
@@ -73,7 +65,7 @@ int main() {
 	destroiImagem(buffer);
 	destroiImagem(fundo);
 	destroiImagem(fundoAmpliado);
-	destroiImagem(bin);
+	destroiImagem(cinza);
 	destroiImagem(temp);
 	destroiImagem(saida);
 
@@ -129,32 +121,38 @@ void atribuiFundo(Imagem *in, Imagem *buffer, Imagem *fundoAmpliado, Imagem *out
 	}
 }
 
-void binarizaVerde(Imagem *in, Imagem *bin){
+void verdeParaCinza(Imagem *in, Imagem *cinza){
 	for(int y = 0; y < in->altura; y += 1) {
 		for(int x = 0; x < in->largura; x += 1) {
-			if(!((in->dados[0][y][x] > 65 && in->dados[0][y][x] < 145) 
+			if((in->dados[0][y][x] > 70 && in->dados[0][y][x] < 140) 
 					&& (in->dados[1][y][x] > 0.25f) 
-					&& (in->dados[2][y][x] > 0.15f && in->dados[2][y][x] < 0.715f)))
-				bin->dados[0][y][x] = 0.0f;
-			else 
-				bin->dados[0][y][x] = 1.0f;
+					&& (in->dados[2][y][x] > 0.15f && in->dados[2][y][x] < 0.715f))
+				cinza->dados[0][y][x] = in->dados[0][y][x]/(105 + abs(105 - in->dados[0][y][x]));
+			else if((in->dados[0][y][x] > 95 && in->dados[0][y][x] < 125) 
+					&& (in->dados[1][y][x] > 0.45f)
+					&& (in->dados[2][y][x] >= 0.6f && in->dados[2][y][x] < 0.85f))
+				cinza->dados[0][y][x] = (in->dados[0][y][x] - abs(105 - in->dados[0][y][x]))
+						/(105 + abs(105 - in->dados[0][y][x]));
+			else
+				cinza->dados[0][y][x] = (in->dados[0][y][x] - abs(105 - in->dados[0][y][x]))
+						/(210 + abs(105 - in->dados[0][y][x]));
 		}
 	}	
 }
 
-void atribuiFundoBin(Imagem *bin, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida){
-	for(int y = 0; y < bin->altura; y += 1) {
-		for(int x = 0; x < bin->largura; x += 1) {
-			if(bin->dados[0][y][x] == 1.0f) {
+void atribuiFundoCinza(Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida){
+	for(int y = 0; y < cinza->altura; y += 1) {
+		for(int x = 0; x < cinza->largura; x += 1) {
+			if(cinza->dados[0][y][x] >= 0.8f) {
 				saida->dados[0][y][x] = fundoAmpliado->dados[0][y][x];
 				saida->dados[1][y][x] = fundoAmpliado->dados[1][y][x];
 				saida->dados[2][y][x] = fundoAmpliado->dados[2][y][x];
-			}
-			else {							
+			}		
+			else { 
 				saida->dados[0][y][x] = buffer->dados[0][y][x];
 				saida->dados[1][y][x] = buffer->dados[1][y][x];
 				saida->dados[2][y][x] = buffer->dados[2][y][x];
-			}				
+			}		
 		}
 	}		
 }
