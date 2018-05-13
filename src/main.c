@@ -3,6 +3,7 @@
 #include <math.h>
 #include "pdi.h"
 
+/** Declaração das novas funções **/
 void verdeParaCinza(Imagem *in, Imagem *cinza);
 void atribuiFundoCinza(Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida);
 
@@ -22,6 +23,7 @@ int main() {
 
 	char nome[30];
 
+	//Declaração das imagens auxiliares
 	Imagem *in, *buffer, *fundoAmpliado;
 	Imagem *cinza, *saida;
 	Imagem *fundo = abreImagem("fundo.bmp", 3);
@@ -35,23 +37,34 @@ int main() {
 		cinza 	= criaImagem(in->largura, in->altura, 1);
 		fundoAmpliado = criaImagem(in->largura, in->altura, in->n_canais);
 		saida 	= criaImagem(in->largura, in->altura, in->n_canais);
-				
+		
+		//buffer recebe imagem RGB
 		copiaConteudo(in, buffer);
+
+		//Transforma in em imagem HSL
 		RGBParaHSL(in, in);
 
+		//Redimensiona o fundo com o tamanho da imagem original
 		redimensionaNN(fundo, fundoAmpliado);
 
+		//Transforma cada pixel em tonalidade de cinza de acordo com o
+		//seu distanciamento da matiz verde: 105
 		verdeParaCinza(in, cinza);
 
+		//Imprime a imagem "mapa"
 		sprintf(nome, "../resultados/%dcinza.bmp", cont);
 		salvaImagem(cinza, nome);
 
+		//Atribui a imagem final em saida, de acordo com o mapa
+		//Se a tonalidade cinza for claro é verde, então recebe fundo
 		atribuiFundoCinza(cinza, buffer, fundoAmpliado, saida);
 		
+		//Imprime a imagem de saida
 		sprintf(nome, "../resultados/%dcinzaTeste.bmp", cont);
 		salvaImagem(saida, nome);
 	}
 
+	// Destroi todas as imagens alocadas
 	destroiImagem(in);
 	destroiImagem(buffer);
 	destroiImagem(fundo);
@@ -62,6 +75,7 @@ int main() {
 	return 0;
 }
 
+// Para cada pixel, atribui tonalidade escura de acordo com o afastamento da matiz com verde
 void verdeParaCinza(Imagem *in, Imagem *cinza){
 	for(int y = 0; y < in->altura; y += 1) {
 		for(int x = 0; x < in->largura; x += 1) {
@@ -82,6 +96,7 @@ void verdeParaCinza(Imagem *in, Imagem *cinza){
 	}	
 }
 
+// Se o pixel for escuro atribui a imagem. Se não, atribui fundo
 void atribuiFundoCinza(Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida){
 	for(int y = 0; y < cinza->altura; y += 1) {
 		for(int x = 0; x < cinza->largura; x += 1) {
