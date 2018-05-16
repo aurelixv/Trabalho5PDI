@@ -10,7 +10,7 @@ void atribuiFundoCinzaBordaBorrada (Imagem *cinza, Imagem *buffer, Imagem *fundo
 
 int main() {
 	//Todas as imagens que serão utilizadas.
-	char * imagens[30] = {
+	char * imagens[9] = {
 		"../imagens/0.bmp",
 		"../imagens/1.bmp",
 		"../imagens/2.bmp",
@@ -22,7 +22,7 @@ int main() {
 		"../imagens/8.bmp"
 	};
 
-	char nome[30];
+	char nome[50];
 
 	//Declaração das imagens auxiliares
 	Imagem *in, *buffer, *fundoAmpliado;
@@ -70,6 +70,7 @@ int main() {
 
 		//Atribui a imagem final em saida, de acordo com o mapa
 		//Se a tonalidade cinza for claro é verde, então recebe fundo
+		//Borra as bordas
 		atribuiFundoCinzaBordaBorrada(cinza, buffer, fundoAmpliado, saida);
 		
 		//Imprime a imagem de saida
@@ -83,7 +84,7 @@ int main() {
 	destroiImagem(fundo);
 	destroiImagem(fundoAmpliado);
 	destroiImagem(cinza);
-	destroiImagem(saida);
+	destroiImagem(saida);	
 
 	return 0;
 }
