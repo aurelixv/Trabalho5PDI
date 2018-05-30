@@ -6,7 +6,7 @@
 /** Declaração das novas funções **/
 void verdeParaCinza(Imagem *in, Imagem *cinza);
 void atribuiFundoCinza(Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida);
-void atribuiFundoCinzaBordaBorrada (Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida);
+void atribuiFundoCinzaBordaBorrada (Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida, int janela);
 
 int main() {
 	//Todas as imagens que serão utilizadas.
@@ -71,7 +71,7 @@ int main() {
 		//Atribui a imagem final em saida, de acordo com o mapa
 		//Se a tonalidade cinza for claro é verde, então recebe fundo
 		//Borra as bordas
-		atribuiFundoCinzaBordaBorrada(cinza, buffer, fundoAmpliado, saida);
+		atribuiFundoCinzaBordaBorrada(cinza, buffer, fundoAmpliado, saida, 5);
 		
 		//Imprime a imagem de saida
 		sprintf(nome, "../resultados/%d4borrado.bmp", cont);
@@ -128,22 +128,22 @@ void atribuiFundoCinza(Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Ima
 	}		
 }
 
-void atribuiFundoCinzaBordaBorrada (Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida) {
+void atribuiFundoCinzaBordaBorrada (Imagem *cinza, Imagem *buffer, Imagem *fundoAmpliado, Imagem *saida, int janela) {
 	int cor = 0;
 	int verde = 0;
 	float somatorioR = 0;
 	float somatorioG = 0;
 	float somatorioB = 0;
 
-	for(int y = 1; y < cinza->altura - 1; y += 1) {
-		for(int x = 1; x < cinza->largura - 1; x += 1) {
+	for(int y = janela/2; y < cinza->altura - janela/2; y += 1) {
+		for(int x = janela/2; x < cinza->largura - janela/2; x += 1) {
 			cor = 0;
 			verde = 0;
 			somatorioR = 0;
 			somatorioG = 0;
 			somatorioB = 0;
-			for(int j = y - 1; j <= y + 1; j += 1) {
-				for(int i = x - 1; i <= x + 1; i += 1) {
+			for(int j = y - janela/2; j <= y + janela/2; j += 1) {
+				for(int i = x - janela/2; i <= x + janela/2; i += 1) {
 					if(cinza->dados[0][j][i] > 0.5f) {
 						verde += 1;
 						somatorioR += fundoAmpliado->dados[0][j][i];
@@ -158,20 +158,20 @@ void atribuiFundoCinzaBordaBorrada (Imagem *cinza, Imagem *buffer, Imagem *fundo
 					}
 				}
 			}
-			if (verde == 9) {
+			if (verde == janela*janela) {
 				saida->dados[0][y][x] = fundoAmpliado->dados[0][y][x];
 				saida->dados[1][y][x] = fundoAmpliado->dados[1][y][x];
 				saida->dados[2][y][x] = fundoAmpliado->dados[2][y][x];
 			}
-			else if(cor == 9){
+			else if(cor == janela*janela){
 				saida->dados[0][y][x] = buffer->dados[0][y][x];
 				saida->dados[1][y][x] = buffer->dados[1][y][x];
 				saida->dados[2][y][x] = buffer->dados[2][y][x];
 			}
 			else {				
-				saida->dados[0][y][x] = somatorioR/9;
-				saida->dados[1][y][x] = somatorioG/9;
-				saida->dados[2][y][x] = somatorioB/9;
+				saida->dados[0][y][x] = somatorioR/(janela*janela);
+				saida->dados[1][y][x] = somatorioG/(janela*janela);
+				saida->dados[2][y][x] = somatorioB/(janela*janela);
 			}
 		}
 	}
